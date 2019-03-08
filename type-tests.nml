@@ -1,0 +1,9 @@
+(check-principal-type (lambda (x y) (cons x (cons x y)))
+    (forall ('a) ('a (list 'a) -> (list 'a))))
+
+(check-type-error
+    (letrec ([y (lambda (n) (+ x n))]
+                 [x #t])
+        (y 11)))
+
+(check-type-error (let ([s x]) (s)))

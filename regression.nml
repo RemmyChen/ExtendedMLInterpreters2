@@ -1,0 +1,60 @@
+;; literals
+(check-principal-type '[] (forall ('a) (list 'a)))
+(check-principal-type 3 int)
+(check-principal-type #t bool)
+(check-principal-type 'a sym)
+(check-principal-type '() (forall ('a) (list 'a)))
+
+;; pairs
+(check-principal-type '(1 2) (list int))
+(check-principal-type '(1 2 3) (list int))
+(check-type-error '(1, 2, 3))
+(check-type-error '(1 a))
+
+;; if
+(check-principal-type (if #t 44 55) int)
+
+;; begin
+(val n 0)
+(check-principal-type (begin (+ (+ n 1) 1)) int)
+(check-principal-type (begin 1 2 3) int)
+(check-principal-type (begin 1 #t 'a) sym)
+(check-principal-type (begin) unit)
+(check-principal-type (begin 1 #t '(a)) (list sym))
+
+;; lambda
+(check-principal-type (lambda (x) (+ x x)) (int -> int))
+(check-principal-type (lambda (y) (< 0 y)) (int -> bool))
+
+
+;; let
+(check-principal-type (let ([s 1] [t 2]) (+ s t)) int)
+(check-type-error (let ([s 1] [t 's]) (+ s t)))
+(check-type-error (let ([s 1]) (s)))
+
+;; letrec
+(check-principal-type
+    (letrec ([y (lambda (n) (+ x n))]
+             [x 3])
+    (y 11)) int)
+
+(check-principal-type
+    (letrec ([x 3]
+             [y (lambda (n) (+ x n))])
+    (y 11)) int)
+
+(check-principal-type
+    (letrec ([x (lambda (m) (+ 7 m))]
+             [y (lambda (n) (x n))])
+    (y 11)) int)
+
+;; extras
+(check-principal-type (lambda (x y) 
+        (cons x y)) (forall ('a) ('a (list 'a) -> (list 'a))))
+(check-type-error (lambda (x y z) (cons x y z)))
+(check-type-error (+ 1 #t))
+(check-type-error (lambda (x) (cons x x)))
+(check-type-error (lambda (x) (cdr (pair x x)))) 
+
+
+
